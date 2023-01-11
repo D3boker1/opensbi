@@ -88,7 +88,8 @@ static void mstatus_init(struct sbi_scratch *scratch)
 			csr_write_num(CSR_MHPMEVENT3H + cidx,
 				      mhpmevent_init_val >> BITS_PER_LONG);
 #else
-		csr_write_num(CSR_MHPMEVENT3 + cidx, mhpmevent_init_val);
+		if (sbi_hart_has_extension(scratch, SBI_HART_EXT_SSCOFPMF))
+			csr_write_num(CSR_MHPMEVENT3 + cidx, mhpmevent_init_val);
 #endif
 	}
 
