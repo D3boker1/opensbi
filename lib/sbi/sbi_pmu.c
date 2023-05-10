@@ -246,10 +246,10 @@ int sbi_pmu_add_raw_event_counter_map(uint64_t select, uint64_t select_mask, u32
 
 static int pmu_ctr_enable_irq_hw(int ctr_idx)
 {
-	unsigned long mhpmevent_csr;
-	unsigned long mhpmevent_curr;
-	unsigned long mip_val;
-	unsigned long of_mask;
+	//unsigned long mhpmevent_csr;
+	//unsigned long mhpmevent_curr;
+	//unsigned long mip_val;
+	//unsigned long of_mask;
 
 	if (ctr_idx < 3 || ctr_idx >= SBI_PMU_HW_CTR_MAX)
 		return SBI_EFAIL;
@@ -258,12 +258,12 @@ static int pmu_ctr_enable_irq_hw(int ctr_idx)
 	mhpmevent_csr = CSR_MHPMEVENT3H  + ctr_idx - 3;
 	of_mask = (uint32_t)~MHPMEVENTH_OF;
 #else
-	mhpmevent_csr = CSR_MHPMEVENT3 + ctr_idx - 3;
-	of_mask = ~MHPMEVENT_OF;
+	// mhpmevent_csr = CSR_MHPMEVENT3 + ctr_idx - 3;
+	// of_mask = ~MHPMEVENT_OF;
 #endif
 
-	mhpmevent_curr = csr_read_num(mhpmevent_csr);
-	mip_val = csr_read(CSR_MIP);
+	// mhpmevent_curr = csr_read_num(mhpmevent_csr);
+	// mip_val = csr_read(CSR_MIP);
 	/**
 	 * Clear out the OF bit so that next interrupt can be enabled.
 	 * This should be done only when the corresponding overflow interrupt
@@ -272,10 +272,10 @@ static int pmu_ctr_enable_irq_hw(int ctr_idx)
 	 * Otherwise, there will be race conditions where we may clear the bit
 	 * the software is yet to handle the interrupt.
 	 */
-	if (!(mip_val & MIP_LCOFIP)) {
-		mhpmevent_curr &= of_mask;
-		csr_write_num(mhpmevent_csr, mhpmevent_curr);
-	}
+	// if (!(mip_val & MIP_LCOFIP)) {
+	// 	mhpmevent_curr &= of_mask;
+	// 	csr_write_num(mhpmevent_csr, mhpmevent_curr);
+	// }
 
 	return 0;
 }
@@ -408,7 +408,7 @@ static int pmu_reset_hw_mhpmevent(int ctr_idx)
 				   SBI_HART_EXT_SSCOFPMF))
 		csr_write_num(CSR_MHPMEVENT3H + ctr_idx - 3, 0);
 #else
-	csr_write_num(CSR_MHPMEVENT3 + ctr_idx - 3, 0);
+	//csr_write_num(CSR_MHPMEVENT3 + ctr_idx - 3, 0);
 #endif
 
 	return 0;
@@ -489,7 +489,7 @@ static int pmu_update_hw_mhpmevent(struct sbi_pmu_hw_event *hw_evt, int ctr_idx,
 		csr_write_num(CSR_MHPMEVENT3H + ctr_idx - 3,
 			      mhpmevent_val >> BITS_PER_LONG);
 #else
-	csr_write_num(CSR_MHPMEVENT3 + ctr_idx - 3, mhpmevent_val);
+	//csr_write_num(CSR_MHPMEVENT3 + ctr_idx - 3, mhpmevent_val);
 #endif
 
 	return 0;
