@@ -21,7 +21,7 @@
 #include <libfdt.h>
 
 #define ARIANE_UART_ADDR			      0x40000000
-#define ARIANE_UART_FREQ			      50000000
+#define ARIANE_UART_FREQ			      40000000
 #define ARIANE_UART_BAUDRATE			  115200
 #define ARIANE_UART_REG_SHIFT			  2
 #define ARIANE_UART_REG_WIDTH			  4
@@ -29,7 +29,7 @@
 #define ARIANE_PLIC_NUM_SOURCES		  60
 #define ARIANE_HART_COUNT			      1
 #define ARIANE_CLINT_ADDR			      0x2000000
-#define ARIANE_ACLINT_MTIMER_FREQ		2500000
+#define ARIANE_ACLINT_MTIMER_FREQ		2000000
 #define ARIANE_ACLINT_MSWI_ADDR			(ARIANE_CLINT_ADDR + \
 						 CLINT_MSWI_OFFSET)
 #define ARIANE_ACLINT_MTIMER_ADDR		(ARIANE_CLINT_ADDR + \
@@ -96,6 +96,10 @@ static int ariane_final_init(bool cold_boot)
  */
 static int ariane_console_init(void)
 {
+  /* Set UART MUX with hardcoded write */
+  int * tmp;
+  tmp = (int *) 0x1a104074;
+  *tmp = 1;
 	return uart8250_init(ARIANE_UART_ADDR,
 			     ARIANE_UART_FREQ,
 			     ARIANE_UART_BAUDRATE,
