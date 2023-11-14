@@ -11,7 +11,6 @@
 #include <sbi/sbi_const.h>
 #include <sbi/sbi_hart.h>
 #include <sbi/sbi_platform.h>
-#include <sbi/sbi_trap.h>
 #include <sbi_utils/fdt/fdt_helper.h>
 #include <sbi_utils/fdt/fdt_fixup.h>
 #include <sbi_utils/ipi/aclint_mswi.h>
@@ -20,16 +19,17 @@
 #include <sbi_utils/timer/aclint_mtimer.h>
 #include <libfdt.h>
 
-#define ARIANE_UART_ADDR			      0x40000000
-#define ARIANE_UART_FREQ			      40000000
-#define ARIANE_UART_BAUDRATE			  115200
-#define ARIANE_UART_REG_SHIFT			  2
-#define ARIANE_UART_REG_WIDTH			  4
-#define ARIANE_PLIC_ADDR			      0xc000000
-#define ARIANE_PLIC_NUM_SOURCES		  60
-#define ARIANE_HART_COUNT			      1
-#define ARIANE_CLINT_ADDR			      0x2000000
-#define ARIANE_ACLINT_MTIMER_FREQ		2000000
+#define ARIANE_UART_ADDR            0x40000000
+#define ARIANE_UART_FREQ            40000000
+#define ARIANE_UART_BAUDRATE        57600
+#define ARIANE_UART_REG_SHIFT       2
+#define ARIANE_UART_REG_WIDTH      	4
+#define ARIANE_UART_REG_OFFSET      0
+#define ARIANE_PLIC_ADDR            0xc000000
+#define ARIANE_PLIC_NUM_SOURCES	    60
+#define ARIANE_HART_COUNT	          1
+#define ARIANE_CLINT_ADDR	          0x2000000
+#define ARIANE_ACLINT_MTIMER_FREQ		1000000
 #define ARIANE_ACLINT_MSWI_ADDR			(ARIANE_CLINT_ADDR + \
 						 CLINT_MSWI_OFFSET)
 #define ARIANE_ACLINT_MTIMER_ADDR		(ARIANE_CLINT_ADDR + \
@@ -57,7 +57,7 @@ static struct aclint_mtimer_data mtimer = {
 	.mtimecmp_size = ACLINT_DEFAULT_MTIMECMP_SIZE,
 	.first_hartid = 0,
 	.hart_count = ARIANE_HART_COUNT,
-	.has_64bit_mmio = TRUE,
+	.has_64bit_mmio = true,
 };
 
 /*
@@ -77,7 +77,6 @@ static int ariane_final_init(bool cold_boot)
 	void *fdt;
 
   int debugger_off;
-  
 	if (!cold_boot)
 		return 0;
 
@@ -104,29 +103,26 @@ static int ariane_console_init(void)
 			     ARIANE_UART_FREQ,
 			     ARIANE_UART_BAUDRATE,
 			     ARIANE_UART_REG_SHIFT,
-			     ARIANE_UART_REG_WIDTH);
+			     ARIANE_UART_REG_WIDTH,
+			     ARIANE_UART_REG_OFFSET);
 }
 
 static int plic_ariane_warm_irqchip_init(int m_cntx_id, int s_cntx_id)
 {
-	size_t i, ie_words = ARIANE_PLIC_NUM_SOURCES / 32 + 1;
+	int ret;
 
 	/* By default, enable all IRQs for M-mode of target HART */
 	if (m_cntx_id > -1) {
-		for (i = 0; i < ie_words; i++)
-			plic_set_ie(&plic, m_cntx_id, i, 1);
+		ret = plic_context_init(&plic, m_cntx_id, true, 0x1);
+		if (ret)
+			return ret;
 	}
 	/* Enable all IRQs for S-mode of target HART */
 	if (s_cntx_id > -1) {
-		for (i = 0; i < ie_words; i++)
-			plic_set_ie(&plic, s_cntx_id, i, 1);
+		ret = plic_context_init(&plic, s_cntx_id, true, 0x0);
+		if (ret)
+			return ret;
 	}
-	/* By default, enable M-mode threshold */
-	if (m_cntx_id > -1)
-		plic_set_thresh(&plic, m_cntx_id, 1);
-	/* By default, disable S-mode threshold */
-	if (s_cntx_id > -1)
-		plic_set_thresh(&plic, s_cntx_id, 0);
 
 	return 0;
 }
@@ -198,5 +194,6 @@ const struct sbi_platform platform = {
 	.features = SBI_PLATFORM_DEFAULT_FEATURES,
 	.hart_count = ARIANE_HART_COUNT,
 	.hart_stack_size = SBI_PLATFORM_DEFAULT_HART_STACK_SIZE,
+	.heap_size = SBI_PLATFORM_DEFAULT_HEAP_SIZE(ARIANE_HART_COUNT),
 	.platform_ops_addr = (unsigned long)&platform_ops
 };
