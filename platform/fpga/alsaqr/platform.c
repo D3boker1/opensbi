@@ -21,7 +21,7 @@
 
 #define ARIANE_UART_ADDR            0x40000000
 #define ARIANE_UART_FREQ            40000000
-#define ARIANE_UART_BAUDRATE        115200
+#define ARIANE_UART_BAUDRATE        38400
 #define ARIANE_UART_REG_SHIFT       2
 #define ARIANE_UART_REG_WIDTH      	4
 #define ARIANE_UART_REG_OFFSET      0
