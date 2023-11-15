@@ -10,7 +10,7 @@
   compatible = "eth,occamy-dev";
   model = "eth,occamy";
   chosen {
-    stdout-path = "/soc/uart@40000000:57600";
+    stdout-path = "/soc/uart@40000000:115200";
   };
   memory@80000000 {
     device_type = "memory";
@@ -68,7 +68,7 @@
       compatible = "ns16550";
       reg = <0x0 0x40000000 0x0 0x1000>;
       clock-frequency = <40000000>;
-      current-speed = <57600>;
+      current-speed = <115200>;
       interrupt-parent = <&PLIC0>;
       interrupts = <2>;
       reg-shift = <2>; // regs are spaced on 32 bit boundary

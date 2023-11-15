@@ -21,7 +21,7 @@
 
 #define ARIANE_UART_ADDR            0x40000000
 #define ARIANE_UART_FREQ            40000000
-#define ARIANE_UART_BAUDRATE        57600
+#define ARIANE_UART_BAUDRATE        115200
 #define ARIANE_UART_REG_SHIFT       2
 #define ARIANE_UART_REG_WIDTH      	4
 #define ARIANE_UART_REG_OFFSET      0
@@ -98,6 +98,8 @@ static int ariane_console_init(void)
   /* Set UART MUX with hardcoded write */
   int * tmp;
   tmp = (int *) 0x1a104074;
+  *tmp = 1;
+  tmp = (int *) 0x1a10407c;
   *tmp = 1;
 	return uart8250_init(ARIANE_UART_ADDR,
 			     ARIANE_UART_FREQ,
