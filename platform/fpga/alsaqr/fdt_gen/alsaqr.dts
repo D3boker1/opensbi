@@ -12,9 +12,13 @@
   chosen {
     stdout-path = "/soc/uart@40000000:38400";
   };
+  memory@1C000000 {
+    device_type = "memory";
+    reg = <0x0 0x1C000000 0x0 0x1000>;
+  };
   memory@80000000 {
     device_type = "memory";
-    reg = <0x0 0x80000000 0x0 0x20000000>;
+    reg = <0x0 0x80000000 0x0 0x2000000>;
   };
   cpus {
     #address-cells = <1>;
