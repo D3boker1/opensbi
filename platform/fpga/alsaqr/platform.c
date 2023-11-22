@@ -20,8 +20,8 @@
 #include <libfdt.h>
 
 #define ARIANE_UART_ADDR            0x40000000
-#define ARIANE_UART_FREQ            10000000
-#define ARIANE_UART_BAUDRATE        9600
+#define ARIANE_UART_FREQ            TARGET_FREQ
+#define ARIANE_UART_BAUDRATE        TARGET_BAUDRATE
 #define ARIANE_UART_REG_SHIFT       2
 #define ARIANE_UART_REG_WIDTH      	4
 #define ARIANE_UART_REG_OFFSET      0

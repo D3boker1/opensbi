@@ -5,6 +5,20 @@
 #		Panagiotis Peristerakis <perister@ics.forth.gr>
 #
 
+ifndef TARGET_FREQ
+  $(error TARGET_FREQ not set - please export TARGET FREQ in Hz)
+endif
+
+ifeq ($(shell expr $(TARGET_FREQ) \>= 50000000), 1)
+  TARGET_BAUDRATE := 115200
+else ifeq ($(shell expr $(TARGET_FREQ) \>= 40000000), 1)
+	TARGET_BAUDRATE := 38400
+else
+	TARGET_BAUDRATE := 9600
+endif
+
+platform-genflags-y += -DTARGET_FREQ=$(TARGET_FREQ) -DTARGET_BAUDRATE=$(TARGET_BAUDRATE)
+
 # Compiler flags
 platform-cppflags-y =
 platform-cflags-y =
@@ -41,3 +55,12 @@ else
 endif
 FW_PAYLOAD_FDT_ADDR=0x81800000
 FW_PAYLOAD_ALIGN=0x1000
+
+clean.dts:
+	rm -f $(platform_src_dir)/fdt_gen/alsaqr.dts
+
+alsaqr.dts: clean.dts
+	$(shell sed 's/targetfreq/$(TARGET_FREQ)/g' $(platform_src_dir)/fdt_gen/alsaqr-template.dts > $(platform_src_dir)/fdt_gen/alsaqr.dts)
+	$(shell sed -i 's/targetbaud/$(TARGET_BAUDRATE)/g' $(platform_src_dir)/fdt_gen/alsaqr.dts)
+
+PHONY: clean.dts alsaqr.dts
