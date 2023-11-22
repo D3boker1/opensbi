@@ -10,7 +10,7 @@
   compatible = "eth,occamy-dev";
   model = "eth,occamy";
   chosen {
-    stdout-path = "/soc/uart@40000000:38400";
+    stdout-path = "/soc/uart@40000000:9600";
   };
   memory@1C000000 {
     device_type = "memory";
@@ -28,7 +28,7 @@
       device_type = "cpu";
       status = "okay";
       compatible = "eth,ariane", "riscv";
-      clock-frequency = <40000000>;
+      clock-frequency = <10000000>;
       riscv,isa = "rv64fimadch";
       mmu-type = "riscv,sv39";
       tlb-split;
@@ -71,7 +71,7 @@
     uart@40000000 {
       compatible = "ns16550";
       reg = <0x0 0x40000000 0x0 0x1000>;
-      clock-frequency = <40000000>;
+      clock-frequency = <10000000>;
       current-speed = <38400>;
       interrupt-parent = <&PLIC0>;
       interrupts = <2>;
