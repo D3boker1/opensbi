@@ -67,7 +67,7 @@ if __name__ == "__main__":
     plic = PLIC.replace("first-interrupt","<&CPU0_intc 11 &CPU0_intc 9>")
     debug= DEBUG.replace("first-interrupt","<&CPU0_intc 65535>")
 
-    if(num_harts==1):
+    if(num_harts=="1"):
         clint = clint.replace("second-interrupt","")
         plic = plic.replace("second-interrupt","")
         debug = debug.replace("second-interrupt","")
