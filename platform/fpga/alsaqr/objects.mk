@@ -5,8 +5,14 @@
 #		Panagiotis Peristerakis <perister@ics.forth.gr>
 #
 
+HALF_FREQ=$(shell expr $(TARGET_FREQ) / 2)
+
 ifndef TARGET_FREQ
   $(error TARGET_FREQ not set - please export TARGET FREQ in Hz)
+endif
+
+ifndef NUM_HARTS
+  $(error NUM_HARTS not set - please export number of harts)
 endif
 
 ifeq ($(shell expr $(TARGET_FREQ) \>= 50000000), 1)
@@ -17,7 +23,7 @@ else
 	TARGET_BAUDRATE := 9600
 endif
 
-platform-genflags-y += -DTARGET_FREQ=$(TARGET_FREQ) -DTARGET_BAUDRATE=$(TARGET_BAUDRATE)
+platform-genflags-y += -DTARGET_FREQ=$(TARGET_FREQ) -DTARGET_BAUDRATE=$(TARGET_BAUDRATE) -DNUM_HARTS=$(NUM_HARTS)
 
 # Compiler flags
 platform-cppflags-y =
@@ -60,7 +66,7 @@ clean.dts:
 	rm -f $(platform_src_dir)/fdt_gen/alsaqr.dts
 
 alsaqr.dts: clean.dts
-	$(shell sed 's/targetfreq/$(TARGET_FREQ)/g' $(platform_src_dir)/fdt_gen/alsaqr-template.dts > $(platform_src_dir)/fdt_gen/alsaqr.dts)
-	$(shell sed -i 's/targetbaud/$(TARGET_BAUDRATE)/g' $(platform_src_dir)/fdt_gen/alsaqr.dts)
+	cp $(platform_src_dir)/fdt_gen/alsaqr-template.dts $(platform_src_dir)/fdt_gen/alsaqr.dts
+	python3 $(platform_src_dir)/fdt_gen/dts_gen.py $(platform_src_dir)/fdt_gen/alsaqr.dts $(NUM_HARTS) $(TARGET_FREQ) $(HALF_FREQ) $(TARGET_BAUDRATE)
 
 PHONY: clean.dts alsaqr.dts
