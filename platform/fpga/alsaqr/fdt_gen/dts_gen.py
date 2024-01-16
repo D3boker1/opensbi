@@ -11,7 +11,7 @@ CPU_TARGET="""CPUhartid: cpu@hartid {
       riscv,isa = "rv64fimadch";
       mmu-type = "riscv,sv39";
       tlb-split;
-      reg = <0>;
+      reg = <hartid>;
       CPUhartid_intc: interrupt-controller {
         #address-cells = <1>;
         #interrupt-cells = <1>;
@@ -21,7 +21,7 @@ CPU_TARGET="""CPUhartid: cpu@hartid {
     };
 """
 
-CLINT="""    clint@2000000 {
+CLINT="""clint@2000000 {
       compatible = "riscv,clint0";
       interrupts-extended = first-interrupt second-interrupt;
       reg = <0x0 0x2000000 0x0 0xc0000>;
@@ -44,8 +44,7 @@ DEBUG="""    debug-controller@0 {
       interrupts-extended = first-interrupt second-interrupt;
       reg = <0x0 0x0 0x0 0x1000>;
       reg-names = "control";
-    };
-"""
+    };"""
 
 def replace_strings(file_path, old_string, new_string):
     with fileinput.FileInput(file_path, inplace=True, backup=".bak") as file:
